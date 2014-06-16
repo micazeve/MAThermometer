@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>9EBB966A-CAA8-48D0-9EB5-3AE220BD4B4F</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MAThermometer-Demo</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>318692BE-CA36-498C-9B90-B8010F04322B</key>
+		<string>https://github.com/micazeve/MAThermometer.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MAThermometer-Demo/MAThermometer-Demo.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>318692BE-CA36-498C-9B90-B8010F04322B</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/micazeve/MAThermometer.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>318692BE-CA36-498C-9B90-B8010F04322B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>318692BE-CA36-498C-9B90-B8010F04322B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MAThermometer</string>
+		</dict>
+	</array>
+</dict>
+</plist>
