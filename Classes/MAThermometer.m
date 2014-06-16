@@ -24,6 +24,28 @@ static const CGFloat colorsBlueToRed[] =  {
 }
 
 @property (nonatomic, assign) CGFloat span;
+@property (nonatomic, assign) CGFloat height;
+@property (nonatomic, assign) CGFloat yOffset;
+
+
+@property (nonatomic, assign) CGFloat lineWidth;
+
+// Lower part of the thermometer
+@property (nonatomic, assign) CGFloat lowerCircleRadius;
+@property (nonatomic, assign) CGPoint lowerCircleCenter;
+@property (nonatomic, assign) CGPoint lowerCircleFirst;
+@property (nonatomic, assign) CGPoint lowerCircleMiddle;
+@property (nonatomic, assign) CGPoint lowerCircleSecond;
+
+// Upper part of the thermometer
+@property (nonatomic, assign) CGFloat upperCircleRadius;
+@property (nonatomic, assign) CGPoint upperCircleCenter;
+@property (nonatomic, assign) CGPoint upperCircleFirst;
+@property (nonatomic, assign) CGPoint upperCircleMiddle;
+@property (nonatomic, assign) CGPoint upperCircleSecond;
+
+
+
 
 @end
 
@@ -64,13 +86,46 @@ static const CGFloat colorsBlueToRed[] =  {
 -(void)customInit
 {
     _curValue = 0;
+    _yOffset = 0;
+    _height = CGRectGetHeight(self.bounds);
+    
+    CGFloat width = CGRectGetWidth(self.bounds);
+    
+    if (_height/width > 4) {
+        _height = width* 4;
+        _yOffset = (CGRectGetHeight(self.bounds) - _height)/2;
+    }
+    
     
     [self setMinValue:0 maxValue:100];
     customGradientValues[3] = 1;
     customGradientValues[7] = 1;
+        
+    // We compute all the points in order to save some time on drawRect method
+    
+    _lineWidth              = _height/100.f;
+    
+    
+    _lowerCircleRadius      = (_height -2*_lineWidth)/8;
+    _lowerCircleCenter      = CGPointMake(CGRectGetMidX(self.bounds), _height - (_lowerCircleRadius + _lineWidth) + _yOffset);
+    _lowerCircleFirst       = CGPointMake((_lowerCircleCenter.x - cos(M_PI_4) * _lowerCircleRadius),
+                                          (_lowerCircleCenter.y - sin(M_PI_4) * _lowerCircleRadius));
+    _lowerCircleMiddle      = CGPointMake(_lowerCircleCenter.x,
+                                          _lowerCircleCenter.y + _lowerCircleRadius);
+    _lowerCircleSecond      = CGPointMake((_lowerCircleCenter.x + cos(M_PI_4) * _lowerCircleRadius),
+                                          (_lowerCircleCenter.y - sin(M_PI_4) * _lowerCircleRadius));
+    
+    
+    _upperCircleRadius      = (_lowerCircleSecond.x - _lowerCircleFirst.x)/2;
+    _upperCircleCenter      = CGPointMake(CGRectGetMidX(self.bounds), _lineWidth + _upperCircleRadius+ _yOffset);
+    _upperCircleFirst       = CGPointMake(_lowerCircleFirst.x, _upperCircleCenter.y);
+    _upperCircleMiddle      = CGPointMake(_upperCircleCenter.x,_upperCircleCenter.y - _upperCircleRadius);
+    _upperCircleSecond      = CGPointMake(_lowerCircleSecond.x, _upperCircleCenter.y);
+    
+    
+    
     
     self.backgroundColor = [UIColor clearColor];
-    self.transform =CGAffineTransformMakeRotation(M_PI);
 }
 
 #pragma mark - Custom setters
@@ -124,66 +179,34 @@ static const CGFloat colorsBlueToRed[] =  {
 	CGContextClearRect(context, rect);
     
     
-    // Calcul du point du centre
+    CGContextAddEllipseInRect(context, CGRectMake(_lowerCircleCenter.x - _lowerCircleRadius, _lowerCircleCenter.y - _lowerCircleRadius,
+                                                  _lowerCircleRadius*2, _lowerCircleRadius*2));
     
-    CGFloat lineWidth = self.frame.size.height/100.f;
+    CGContextMoveToPoint(context, _lowerCircleFirst.x, _lowerCircleFirst.y);
     
-
-    CGFloat radius = (self.frame.size.height -2*lineWidth)/8;
+    CGContextAddLineToPoint(context, _upperCircleFirst.x, _upperCircleFirst.y);
+    CGContextAddArcToPoint(context, _upperCircleFirst.x, _upperCircleMiddle.y,
+                           _upperCircleMiddle.x, _upperCircleMiddle.y, _upperCircleRadius);
     
-    
-    CGPoint circleCenter = CGPointMake(CGRectGetMidX(self.bounds), radius + lineWidth);
-    
-    // premier point
-    
-    CGPoint circleFirst = CGPointMake((circleCenter.x - cos(M_PI_4)*radius),
-                                      (circleCenter.y + sin(M_PI_4)*radius));
-    
-    CGPoint circleMiddle = CGPointMake(circleCenter.x,
-                                       circleCenter.y - radius);
-    
-    CGPoint circleSecond = CGPointMake((circleCenter.x + cos(M_PI_4)*radius),
-                                       (circleCenter.y + sin(M_PI_4)*radius));
-    
-    CGFloat radiusSmall = (circleSecond.x - circleFirst.x)/2;
-    
-    CGPoint circleSmallCenter   = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(self.bounds) - lineWidth - radiusSmall);
-    
-    CGPoint circleSmallFirst    = CGPointMake(circleFirst.x, circleSmallCenter.y);
-    CGPoint circleSmallMiddle   = CGPointMake(circleSmallCenter.x,circleSmallCenter.y + radiusSmall);
-    
-    CGPoint circleSmallSecond   = CGPointMake(circleSecond.x, circleSmallCenter.y);
-
-    
-    CGContextAddEllipseInRect(context, CGRectMake(circleCenter.x - radius, circleCenter.y - radius, radius*2, radius*2));
-    
-    CGContextMoveToPoint(context, circleSecond.x, circleSecond.y);
-    
-    CGContextAddLineToPoint(context, circleSmallSecond.x, circleSmallSecond.y);
-    CGContextAddArcToPoint(context, circleSmallSecond.x, circleSmallMiddle.y,
-                           circleSmallMiddle.x, circleSmallMiddle.y, radiusSmall);
-    
-    CGContextAddArcToPoint(context, circleSmallFirst.x, circleSmallMiddle.y,
-                           circleSmallFirst.x, circleSmallFirst.y, radiusSmall);
-    CGContextAddLineToPoint(context, circleFirst.x, circleFirst.y);
+    CGContextAddArcToPoint(context, _upperCircleSecond.x, _upperCircleMiddle.y,
+                           _upperCircleSecond.x,_upperCircleSecond.y, _upperCircleRadius);
+    CGContextAddLineToPoint(context, _lowerCircleSecond.x, _lowerCircleSecond.y);
     
     CGContextClosePath(context);
     CGContextSaveGState(context);
     CGContextClip(context);
 
-    
-    
-    // on calcule en fonction du pourcentage
-    
+
+        // on calcule en fonction du pourcentage
     
     
     CGContextSetFillColorWithColor(context,[[UIColor blueColor] CGColor]);
     
-    NSInteger height = circleSmallMiddle.y - circleMiddle.y;
+    NSInteger height = _upperCircleMiddle.y - _lowerCircleMiddle.y;
     
     for (uint8_t i = 0; i < 5 ; ++i)
     {
-        pointTemp[i] = CGPointMake(CGRectGetMidX(self.bounds), circleMiddle.y + (i*height)/4);
+        pointTemp[i] = CGPointMake(CGRectGetMidX(self.bounds), _lowerCircleMiddle.y + (i*height)/4);
     }
     
     
@@ -229,43 +252,43 @@ static const CGFloat colorsBlueToRed[] =  {
 
     CGContextRestoreGState(context);
   
-    CGContextSetLineWidth(context, lineWidth);
+    CGContextSetLineWidth(context, _lineWidth);
     CGContextSetStrokeColorWithColor(context,[[UIColor whiteColor] CGColor]);
     
     // Calcul du point du centre
     
-    CGContextMoveToPoint(context, circleFirst.x, circleFirst.y);
-    CGContextAddArcToPoint(context, circleMiddle.x -2*radius, circleMiddle.y,
-                           circleMiddle.x, circleMiddle.y, radius);
+    CGContextMoveToPoint(context, _lowerCircleFirst.x, _lowerCircleFirst.y);
+    CGContextAddArcToPoint(context, _lowerCircleMiddle.x -2*_lowerCircleRadius, _lowerCircleMiddle.y,
+                           _lowerCircleMiddle.x, _lowerCircleMiddle.y, _lowerCircleRadius);
     
-    CGContextMoveToPoint(context, circleSecond.x, circleSecond.y);
-    CGContextAddArcToPoint(context, circleMiddle.x +2*radius, circleMiddle.y,
-                           circleMiddle.x, circleMiddle.y, radius);
+    CGContextMoveToPoint(context, _lowerCircleSecond.x, _lowerCircleSecond.y);
+    CGContextAddArcToPoint(context, _lowerCircleMiddle.x +2*_lowerCircleRadius, _lowerCircleMiddle.y,
+                           _lowerCircleMiddle.x, _lowerCircleMiddle.y, _lowerCircleRadius);
     
-    CGContextMoveToPoint(context, circleFirst.x, circleFirst.y-lineWidth/2);
-    CGContextAddLineToPoint(context, circleSmallFirst.x, circleSmallFirst.y);
+    CGContextMoveToPoint(context, _lowerCircleFirst.x, _lowerCircleFirst.y+_lineWidth/2);
+    CGContextAddLineToPoint(context, _upperCircleFirst.x, _upperCircleFirst.y);
 
-    CGContextMoveToPoint(context, circleSecond.x, circleSecond.y-lineWidth/2);
-    CGContextAddLineToPoint(context, circleSmallSecond.x, circleSmallSecond.y);
+    CGContextMoveToPoint(context, _lowerCircleSecond.x, _lowerCircleSecond.y+_lineWidth/2);
+    CGContextAddLineToPoint(context, _upperCircleSecond.x, _upperCircleSecond.y);
     
-    CGContextAddArcToPoint(context, circleSmallSecond.x, circleSmallMiddle.y,
-                           circleSmallMiddle.x, circleSmallMiddle.y, radiusSmall);
+    CGContextAddArcToPoint(context, _upperCircleSecond.x, _upperCircleMiddle.y,
+                           _upperCircleMiddle.x, _upperCircleMiddle.y, _upperCircleRadius);
     
-    CGContextMoveToPoint(context, circleSmallFirst.x, circleSmallFirst.y);
+    CGContextMoveToPoint(context, _upperCircleFirst.x, _upperCircleFirst.y);
     
-    CGContextAddArcToPoint(context, circleSmallFirst.x, circleSmallMiddle.y,
-                           circleSmallMiddle.x, circleSmallMiddle.y, radiusSmall);
+    CGContextAddArcToPoint(context, _upperCircleFirst.x, _upperCircleMiddle.y,
+                           _upperCircleMiddle.x, _upperCircleMiddle.y, _upperCircleRadius);
     
     CGContextStrokePath(context);
     
     
-    CGFloat diff = circleSmallFirst.y - circleFirst.y;
+    CGFloat diff = _upperCircleFirst.y - _lowerCircleFirst.y;
     
     
     for (NSInteger i = 0; i <4 ; ++i)
     {
-        CGPoint origin = CGPointMake(circleSmallFirst.x, circleFirst.y + diff*i/4.f + diff/8.f);
-        CGPoint dest = CGPointMake(origin.x + 0.6f * (circleSmallSecond.x -circleSmallFirst.x) , origin.y);
+        CGPoint origin = CGPointMake(_upperCircleSecond.x, _lowerCircleFirst.y + diff*i/4.f + diff/8.f);
+        CGPoint dest = CGPointMake(origin.x - 0.6f * (_upperCircleSecond.x -_upperCircleFirst.x) , origin.y);
         
         
         CGContextMoveToPoint(context, origin.x, origin.y);

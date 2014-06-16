@@ -44,9 +44,6 @@
     [_viewForThermometer1 addSubview:_thermometer1];
     [_viewForThermometer2 addSubview:_thermometer2];
     [_viewForThermometer3 addSubview:_thermometer3];
-    [_viewForThermometer1 setBackgroundColor:[UIColor clearColor]];
-    [_viewForThermometer2 setBackgroundColor:[UIColor clearColor]];
-    [_viewForThermometer3 setBackgroundColor:[UIColor clearColor]];
     
     [_labelSlider setText:[NSString stringWithFormat:@"%.2f", _slider.value]];
     
