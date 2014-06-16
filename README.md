@@ -6,13 +6,11 @@ MAThermometer is a custom progress bar with a thermometer look. You can use it a
 
 ----
 
-** How to use it **
-
-MAThermometer is a UIView subclass, so you can use it from interface builder or programmatically with the initWithFrame method. 
+**How to use it** 
+MAThermometer is a UIView subclass, so you can use it from interface builder or programmatically with the `initWithFrame` method. 
 You can then customize the Thermometer using the following properties : curValue, minValue, maxValue, darkTheme.
 
-** Licence **
-
+**Licence**
 MAThermometer is under MIT Licence so you can use/modify it as you wish. Any feedback will be appreciated.
 
 
