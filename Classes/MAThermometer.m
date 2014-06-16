@@ -87,6 +87,8 @@ static const CGFloat colorsBlueToRed[] =  {
 {
     _curValue = 0;
     _yOffset = 0;
+    _darkTheme = NO;
+    
     _height = CGRectGetHeight(self.bounds);
     
     CGFloat width = CGRectGetWidth(self.bounds);
@@ -246,14 +248,17 @@ static const CGFloat colorsBlueToRed[] =  {
         else
         {
             [self drawIntermediateGradientNum:0 withBaseSpace:baseSpace inContext:context];
-            
         }
     }
 
     CGContextRestoreGState(context);
   
     CGContextSetLineWidth(context, _lineWidth);
-    CGContextSetStrokeColorWithColor(context,[[UIColor whiteColor] CGColor]);
+    
+    if (_darkTheme)
+        CGContextSetStrokeColorWithColor(context,[[UIColor blackColor] CGColor]);
+    else
+        CGContextSetStrokeColorWithColor(context,[[UIColor whiteColor] CGColor]);
     
     // Calcul du point du centre
     

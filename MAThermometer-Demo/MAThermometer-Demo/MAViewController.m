@@ -33,9 +33,10 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     _thermometer1 = [[MAThermometer alloc] initWithFrame:_viewForThermometer1.bounds];
+    _thermometer1.maxValue = 200;
     
     _thermometer2 = [[MAThermometer alloc] initWithFrame:_viewForThermometer2.bounds];
-    _thermometer2.maxValue = 200;
+    _thermometer2.darkTheme = YES;
     
     _thermometer3 = [[MAThermometer alloc] initWithFrame:_viewForThermometer3.bounds];
     _thermometer3.minValue = -100;

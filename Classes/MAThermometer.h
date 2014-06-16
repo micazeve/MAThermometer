@@ -13,4 +13,6 @@
 @property (nonatomic, assign) CGFloat minValue;
 @property (nonatomic, assign) CGFloat maxValue;
 
+@property (nonatomic, assign) BOOL darkTheme;
+
 @end
