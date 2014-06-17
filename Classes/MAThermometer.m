@@ -9,13 +9,22 @@
 
 
 static const CGFloat colorsBlueToRed[] =  {
-    0.0, 0.0, 1.0, 1.0,
-	0.0, 1.0, 1.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-	1.0, 1.0, 0.0, 1.0,
-	1.0, 0.0, 0.0, 1.0
+    0.0, 0.0, 1.0, 1.0,     // Blue
+	0.0, 1.0, 1.0, 1.0,     // Cyan
+    0.0, 1.0, 0.0, 1.0,     // Green
+	1.0, 1.0, 0.0, 1.0,     // Yellow
+	1.0, 0.0, 0.0, 1.0      // Red
 };
 
+static const CGFloat colorsLight [] = {
+	1.0, 1.0, 1.0, 0.5,
+	1.0, 1.0, 1.0, 0.0
+};
+
+static const CGFloat colorsReflect [] = {
+	1.0, 1.0, 1.0, 1.0,
+	1.0, 1.0, 1.0, 0.0
+};
 
 @interface MAThermometer () {
 
@@ -85,9 +94,10 @@ static const CGFloat colorsBlueToRed[] =  {
 
 -(void)customInit
 {
-    _curValue = 0;
-    _yOffset = 0;
-    _darkTheme = NO;
+    _curValue               = 0;
+    _yOffset                = 0;
+    _darkTheme              = NO;
+    _shadowEnabled          = NO;
     
     _height = CGRectGetHeight(self.bounds);
     
@@ -124,9 +134,7 @@ static const CGFloat colorsBlueToRed[] =  {
     _upperCircleMiddle      = CGPointMake(_upperCircleCenter.x,_upperCircleCenter.y - _upperCircleRadius);
     _upperCircleSecond      = CGPointMake(_lowerCircleSecond.x, _upperCircleCenter.y);
     
-    
-    
-    
+
     self.backgroundColor = [UIColor clearColor];
 }
 
@@ -170,6 +178,7 @@ static const CGFloat colorsBlueToRed[] =  {
     
     [self setCurValue:_curValue];
 }
+
 
 #pragma mark - Drawing methods
 
@@ -250,17 +259,86 @@ static const CGFloat colorsBlueToRed[] =  {
             [self drawIntermediateGradientNum:0 withBaseSpace:baseSpace inContext:context];
         }
     }
-
+    
     CGContextRestoreGState(context);
-  
+    
+    if (_shadowEnabled)
+    {
+        CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colorsLight, NULL, 2);
+        
+        CGContextMoveToPoint(context, _lowerCircleCenter.x, _lowerCircleCenter.y);
+        CGContextAddArc(context, _lowerCircleCenter.x, _lowerCircleCenter.y, _lowerCircleRadius, -M_PI_4, -3* M_PI_4, 0);
+        CGContextClosePath(context);
+        CGContextSaveGState(context);
+        CGContextClip(context);
+        CGContextDrawRadialGradient(context, gradient, _lowerCircleCenter, _lowerCircleRadius, _lowerCircleCenter, _lowerCircleRadius - _upperCircleRadius, 0);
+        CGContextRestoreGState(context);
+        
+        
+        CGContextMoveToPoint(context, _lowerCircleFirst.x, _lowerCircleFirst.y);
+        CGContextAddArc(context, _lowerCircleFirst.x, _lowerCircleFirst.y, _upperCircleRadius, 0, M_PI_4, 0);
+        CGContextClosePath(context);
+        CGContextSaveGState(context);
+        CGContextClip(context);
+        CGContextDrawRadialGradient(context, gradient, _lowerCircleFirst, 0, _lowerCircleFirst, _upperCircleRadius , 0);
+        CGContextRestoreGState(context);
+        
+        
+        CGContextMoveToPoint(context, _lowerCircleSecond.x, _lowerCircleSecond.y);
+        CGContextAddArc(context, _lowerCircleSecond.x, _lowerCircleSecond.y, _upperCircleRadius, M_PI,3*M_PI_4, 1);
+        CGContextClosePath(context);
+        CGContextSaveGState(context);
+        CGContextClip(context);
+        CGContextDrawRadialGradient(context, gradient, _lowerCircleSecond, 0, _lowerCircleSecond, _upperCircleRadius , 0);
+        CGContextRestoreGState(context);
+        
+        CGContextAddRect(context, CGRectMake(_upperCircleFirst.x, _upperCircleFirst.y, _upperCircleCenter.x - _upperCircleFirst.x, _lowerCircleFirst.y - _upperCircleFirst.y));
+        CGContextClosePath(context);
+        CGContextSaveGState(context);
+        CGContextClip(context);
+        CGContextDrawLinearGradient(context, gradient, _upperCircleFirst, CGPointMake(_upperCircleMiddle.x ,_upperCircleFirst.y), 0);
+        CGContextRestoreGState(context);
+        
+        CGContextAddRect(context, CGRectMake(_upperCircleCenter.x, _upperCircleCenter.y, _upperCircleSecond.x - _upperCircleCenter.x, _lowerCircleSecond.y - _upperCircleSecond.y));
+        CGContextClosePath(context);
+        CGContextSaveGState(context);
+        CGContextClip(context);
+        CGContextDrawLinearGradient(context, gradient, _upperCircleSecond, CGPointMake(_upperCircleMiddle.x ,_upperCircleSecond.y), 0);
+        CGContextRestoreGState(context);
+        
+        CGContextAddArc(context, _upperCircleCenter.x, _upperCircleCenter.y, _upperCircleRadius, 0, M_PI, 1);
+        CGContextClosePath(context);
+        CGContextSaveGState(context);
+        CGContextClip(context);
+        CGContextDrawRadialGradient(context, gradient, _upperCircleCenter, _upperCircleRadius, _upperCircleCenter, 0, 0);
+        CGContextRestoreGState(context);
+        
+        CGGradientRelease(gradient), gradient = NULL;
+        
+        gradient = CGGradientCreateWithColorComponents(baseSpace, colorsReflect, NULL, 2);
+        
+        CGPoint reflectionPoint = CGPointMake((_lowerCircleFirst.x + _lowerCircleCenter.x) /2,
+                                              (_lowerCircleFirst.y + _lowerCircleCenter.y) /2);
+        
+        
+        CGContextDrawRadialGradient(context, gradient, reflectionPoint, 0, reflectionPoint, _lineWidth *2, 0);
+        
+        
+        
+        
+        CGGradientRelease(gradient), gradient = NULL;
+    }
+    
     CGContextSetLineWidth(context, _lineWidth);
+    
+    
+    
+    
     
     if (_darkTheme)
         CGContextSetStrokeColorWithColor(context,[[UIColor blackColor] CGColor]);
     else
         CGContextSetStrokeColorWithColor(context,[[UIColor whiteColor] CGColor]);
-    
-    // Calcul du point du centre
     
     CGContextMoveToPoint(context, _lowerCircleFirst.x, _lowerCircleFirst.y);
     CGContextAddArcToPoint(context, _lowerCircleMiddle.x -2*_lowerCircleRadius, _lowerCircleMiddle.y,

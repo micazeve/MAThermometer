@@ -21,7 +21,8 @@
 @property (nonatomic, strong) MAThermometer * thermometer1;
 @property (nonatomic, strong) MAThermometer * thermometer2;
 @property (nonatomic, strong) MAThermometer * thermometer3;
-@property (weak, nonatomic) IBOutlet MAThermometer * thermometerViaIB;
+@property (weak, nonatomic) IBOutlet MAThermometer *thermometerWithoutShadow;
+@property (weak, nonatomic) IBOutlet MAThermometer *thermometerWithShadow;
 
 @end
 
@@ -39,9 +40,9 @@
     _thermometer2.darkTheme = YES;
     
     _thermometer3 = [[MAThermometer alloc] initWithFrame:_viewForThermometer3.bounds];
-    _thermometer3.minValue = -100;
-    _thermometer3.maxValue = 50;    // curValue will be set to 50 since it's lower than maxValue
     
+    [_thermometerWithShadow setShadowEnabled:YES];
+
     [_viewForThermometer1 addSubview:_thermometer1];
     [_viewForThermometer2 addSubview:_thermometer2];
     [_viewForThermometer3 addSubview:_thermometer3];
@@ -55,7 +56,9 @@
     _thermometer1.curValue = self.slider.value;
     _thermometer2.curValue = self.slider.value;
     _thermometer3.curValue = self.slider.value;
-    _thermometerViaIB.curValue = self.slider.value;
+    _thermometerWithoutShadow.curValue = self.slider.value;
+    _thermometerWithShadow.curValue = self.slider.value;
+    
 }
 
 - (void)didReceiveMemoryWarning
