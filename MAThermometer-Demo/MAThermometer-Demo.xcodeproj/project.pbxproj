@@ -17,6 +17,7 @@
 		8369CC30194F25AA00EEE3BE /* MAViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8369CC2F194F25AA00EEE3BE /* MAViewController.m */; };
 		8369CC32194F25AA00EEE3BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8369CC31194F25AA00EEE3BE /* Images.xcassets */; };
 		8369CC50194F25F100EEE3BE /* MAThermometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8369CC4F194F25F100EEE3BE /* MAThermometer.m */; };
+		83B8643F19503C93002377B8 /* MAThermometerBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 83B8643E19503C93002377B8 /* MAThermometerBorder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,8 @@
 		8369CC38194F25AA00EEE3BE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		8369CC4E194F25F100EEE3BE /* MAThermometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAThermometer.h; path = ../../Classes/MAThermometer.h; sourceTree = "<group>"; };
 		8369CC4F194F25F100EEE3BE /* MAThermometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAThermometer.m; path = ../../Classes/MAThermometer.m; sourceTree = "<group>"; };
+		83B8643D19503C93002377B8 /* MAThermometerBorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAThermometerBorder.h; path = ../../Classes/MAThermometerBorder.h; sourceTree = "<group>"; };
+		83B8643E19503C93002377B8 /* MAThermometerBorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAThermometerBorder.m; path = ../../Classes/MAThermometerBorder.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,8 @@
 			children = (
 				8369CC4E194F25F100EEE3BE /* MAThermometer.h */,
 				8369CC4F194F25F100EEE3BE /* MAThermometer.m */,
+				83B8643D19503C93002377B8 /* MAThermometerBorder.h */,
+				83B8643E19503C93002377B8 /* MAThermometerBorder.m */,
 				8369CC28194F25AA00EEE3BE /* MAAppDelegate.h */,
 				8369CC29194F25AA00EEE3BE /* MAAppDelegate.m */,
 				8369CC2B194F25AA00EEE3BE /* Main.storyboard */,
@@ -173,6 +178,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83B8643F19503C93002377B8 /* MAThermometerBorder.m in Sources */,
 				8369CC50194F25F100EEE3BE /* MAThermometer.m in Sources */,
 				8369CC2A194F25AA00EEE3BE /* MAAppDelegate.m in Sources */,
 				8369CC30194F25AA00EEE3BE /* MAViewController.m in Sources */,
@@ -280,6 +286,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MAThermometer-Demo/MAThermometer-Demo-Prefix.pch";
 				INFOPLIST_FILE = "MAThermometer-Demo/MAThermometer-Demo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -293,6 +300,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MAThermometer-Demo/MAThermometer-Demo-Prefix.pch";
 				INFOPLIST_FILE = "MAThermometer-Demo/MAThermometer-Demo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

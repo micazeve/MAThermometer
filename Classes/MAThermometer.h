@@ -14,6 +14,6 @@
 @property (nonatomic, assign) CGFloat maxValue;
 
 @property (nonatomic, assign) BOOL darkTheme;
-@property (nonatomic, assign) BOOL shadowEnabled;
+@property (nonatomic, assign) BOOL glassEffect;
 
 @end

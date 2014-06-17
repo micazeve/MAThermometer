@@ -41,7 +41,7 @@
     
     _thermometer3 = [[MAThermometer alloc] initWithFrame:_viewForThermometer3.bounds];
     
-    [_thermometerWithShadow setShadowEnabled:YES];
+    [_thermometerWithShadow setGlassEffect:YES];
 
     [_viewForThermometer1 addSubview:_thermometer1];
     [_viewForThermometer2 addSubview:_thermometer2];
