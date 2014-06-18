@@ -273,6 +273,8 @@ static const CGFloat colorsBlueToRed[] =  {
     }
     
     CGContextRestoreGState(context);
+    CGColorSpaceRelease(baseSpace), baseSpace = NULL;
+    
 }
 
 
