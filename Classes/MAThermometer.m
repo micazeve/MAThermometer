@@ -287,12 +287,7 @@
     
     CGContextRestoreGState(context);
     CGColorSpaceRelease(baseSpace), baseSpace = NULL;
-<<<<<<< HEAD
-=======
-    
->>>>>>> FETCH_HEAD
 }
-
 
 -(void)drawFullGradientNum:(uint8_t)numGrad withBaseSpace:(CGColorSpaceRef) baseSpace inContext:(CGContextRef) context
 {
