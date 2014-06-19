@@ -287,6 +287,10 @@
     
     CGContextRestoreGState(context);
     CGColorSpaceRelease(baseSpace), baseSpace = NULL;
+<<<<<<< HEAD
+=======
+    
+>>>>>>> FETCH_HEAD
 }
 
 
