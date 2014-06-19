@@ -8,24 +8,15 @@
 #import "MAThermometer.h"
 #import "MAThermometerBorder.h"
 
-static const CGFloat colorsBlueToRed[] =  {
-    0.0, 0.0, 1.0, 1.0,     // Blue
-	0.0, 1.0, 1.0, 1.0,     // Cyan
-    0.0, 1.0, 0.0, 1.0,     // Green
-	1.0, 1.0, 0.0, 1.0,     // Yellow
-	1.0, 0.0, 0.0, 1.0      // Red
-};
-
-@interface MAThermometer () {
-
-    CGPoint pointTemp[5];
+@interface MAThermometer ()
+{
     CGFloat customGradientValues[8];
+    CGFloat * colorsValue;
 }
 
 @property (nonatomic, assign) CGFloat span;
 @property (nonatomic, assign) CGFloat height;
 @property (nonatomic, assign) CGFloat yOffset;
-
 
 @property (nonatomic, assign) CGFloat lineWidth;
 
@@ -44,10 +35,9 @@ static const CGFloat colorsBlueToRed[] =  {
 @property (nonatomic, assign) CGPoint upperCircleSecond;
 
 @property (nonatomic, strong) MAThermometerBorder * thermometerBorder;
-
+@property (nonatomic, strong) NSMutableArray * arrayPoints;
 
 @end
-
 
 @implementation MAThermometer
 
@@ -84,13 +74,13 @@ static const CGFloat colorsBlueToRed[] =  {
 
 -(void)customInit
 {
-    _curValue               = 0;
-    _yOffset                = 0;
-    
-    _height = CGRectGetHeight(self.bounds);
-    
     _thermometerBorder = [[MAThermometerBorder alloc] initWithFrame:self.bounds];
     [self addSubview:_thermometerBorder];
+    
+    _curValue               = 0;
+    _yOffset                = 0;
+    _height                 = CGRectGetHeight(self.bounds);
+    _arrayPoints            = [[NSMutableArray alloc] init];
     
     CGFloat width = CGRectGetWidth(self.bounds);
     
@@ -99,16 +89,7 @@ static const CGFloat colorsBlueToRed[] =  {
         _yOffset = (CGRectGetHeight(self.bounds) - _height)/2;
     }
     
-    
-    [self setMinValue:0 maxValue:100];
-    customGradientValues[3] = 1;
-    customGradientValues[7] = 1;
-        
-    // We compute all the points in order to save some time on drawRect method
-    
     _lineWidth              = _height/100.f;
-    
-    
     _lowerCircleRadius      = (_height -2*_lineWidth)/8;
     _lowerCircleCenter      = CGPointMake(CGRectGetMidX(self.bounds), _height - (_lowerCircleRadius + _lineWidth) + _yOffset);
     _lowerCircleFirst       = CGPointMake((_lowerCircleCenter.x - cos(M_PI_4) * _lowerCircleRadius),
@@ -125,12 +106,20 @@ static const CGFloat colorsBlueToRed[] =  {
     _upperCircleMiddle      = CGPointMake(_upperCircleCenter.x,_upperCircleCenter.y - _upperCircleRadius);
     _upperCircleSecond      = CGPointMake(_lowerCircleSecond.x, _upperCircleCenter.y);
     
-
+    
+    [self setArrayColors:@[[UIColor blueColor],
+                           [UIColor cyanColor],
+                           [UIColor greenColor],
+                           [UIColor yellowColor],
+                           [UIColor redColor]]];
+    [self setMinValue:0 maxValue:100];
+        
+    // We compute all the points in order to save some time on drawRect method
+    
     self.backgroundColor = [UIColor clearColor];
 }
 
 #pragma mark - Custom setters
-
 
 -(void)setCurValue:(CGFloat)curValue
 {
@@ -180,6 +169,46 @@ static const CGFloat colorsBlueToRed[] =  {
     [_thermometerBorder setGlassEffect:glassEffect];
 }
 
+-(void)setArrayColors:(NSArray *)array
+{
+   if (array == nil || [array count] == 0)
+        return ;
+    
+    _arrayColors = array;
+    
+    // If we set only one color, no need to precompute the gradients variables
+    if ([_arrayColors count] ==1)
+    {
+        return;
+       
+    }
+    
+    
+    if (colorsValue != nil)
+        free(colorsValue);
+    
+    colorsValue = malloc(4* [array count] * sizeof(CGFloat));
+    
+    [_arrayColors enumerateObjectsUsingBlock:^(UIColor * color, NSUInteger idx, BOOL *stop) {
+        
+        [color getRed:&(colorsValue[4*idx])
+                green:&(colorsValue[4*idx +1])
+                 blue:&(colorsValue[4*idx +2])
+                alpha:&(colorsValue[4*idx +3])];
+    }];
+    
+    [_arrayPoints removeAllObjects];
+    
+    NSInteger heightAvailable = _upperCircleMiddle.y - _lowerCircleMiddle.y;
+    CGPoint pointTemp;
+    for (uint8_t i = 0; i < [_arrayColors count] ; ++i)
+    {
+        pointTemp = CGPointMake(CGRectGetMidX(self.bounds), _lowerCircleMiddle.y + (i*heightAvailable)/((NSInteger)([_arrayColors count]-1)));
+        [_arrayPoints addObject:[NSValue valueWithCGPoint:pointTemp]];
+    }
+    [self setNeedsDisplay];
+}
+
 #pragma mark - Custom getters
 
 -(BOOL)darkTheme
@@ -219,92 +248,88 @@ static const CGFloat colorsBlueToRed[] =  {
     CGContextSaveGState(context);
     CGContextClip(context);
 
-
-        // on calcule en fonction du pourcentage
+    NSInteger index = 0;
+    CGFloat valueMin = _minValue;
+    CGFloat valueMax = 0;
     
-    
-    CGContextSetFillColorWithColor(context,[[UIColor blueColor] CGColor]);
-    
-    NSInteger height = _upperCircleMiddle.y - _lowerCircleMiddle.y;
-    
-    for (uint8_t i = 0; i < 5 ; ++i)
+    if ([_arrayColors count] == 1)
     {
-        pointTemp[i] = CGPointMake(CGRectGetMidX(self.bounds), _lowerCircleMiddle.y + (i*height)/4);
+        CGContextSetFillColorWithColor(context, ((UIColor *)_arrayColors[0]).CGColor);
+        
+        CGFloat originY = _lowerCircleMiddle.y - (_lowerCircleMiddle.y -_upperCircleMiddle.y)*(_curValue-_minValue)/_span;
+        
+        CGContextAddRect(context, CGRectMake(CGRectGetMinX(self.bounds),
+                                             originY,
+                                             CGRectGetWidth(self.bounds),
+                                             _lowerCircleMiddle.y - originY));
+        
+        CGContextFillPath(context);
+        
+        return;
     }
     
     
-    if (_curValue > _minValue)
+    while (_curValue > valueMin)
     {
-        if (_curValue > _minValue + 0.25f*_span)
+        valueMax = (index+1)/((CGFloat)([_arrayColors count]-1))*_span;
+        
+        if (_curValue > _minValue + valueMax)
         {
-            [self drawFullGradientNum:0 withBaseSpace:baseSpace inContext:context];
-            
-            if (_curValue > _minValue + 0.5f*_span)
-            {
-               [self drawFullGradientNum:1 withBaseSpace:baseSpace inContext:context];
-                
-                if (_curValue > _minValue + 0.75f*_span)
-                {
-                    [self drawFullGradientNum:2 withBaseSpace:baseSpace inContext:context];
-                    
-                    if (_curValue == _maxValue)
-                    {
-                        [self drawFullGradientNum:3 withBaseSpace:baseSpace inContext:context];
-                    }
-                    else
-                    {
-                        [self drawIntermediateGradientNum:3 withBaseSpace:baseSpace inContext:context];
-                    }
-                }
-                else
-                {
-                    [self drawIntermediateGradientNum:2 withBaseSpace:baseSpace inContext:context];
-                }
-            }
-            else
-            {
-                [self drawIntermediateGradientNum:1 withBaseSpace:baseSpace inContext:context];
-            }
+            [self drawFullGradientNum:index withBaseSpace:baseSpace inContext:context];
         }
         else
         {
-            [self drawIntermediateGradientNum:0 withBaseSpace:baseSpace inContext:context];
+            [self drawIntermediateGradientNum:index withBaseSpace:baseSpace inContext:context];
         }
+        valueMin = valueMax;
+        index ++;
     }
     
     CGContextRestoreGState(context);
+    CGColorSpaceRelease(baseSpace), baseSpace = NULL;
 }
 
 
--(void)drawFullGradientNum:(uint8_t)numGradient withBaseSpace:(CGColorSpaceRef) baseSpace inContext:(CGContextRef) context
+-(void)drawFullGradientNum:(uint8_t)numGrad withBaseSpace:(CGColorSpaceRef) baseSpace inContext:(CGContextRef) context
 {
-    CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colorsBlueToRed + numGradient*4, NULL, 2);
-    CGContextDrawLinearGradient(context, gradient, pointTemp[numGradient], pointTemp[numGradient+1], 0);
+    CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colorsValue + numGrad*4, NULL, 2);
+    CGContextDrawLinearGradient(context, gradient,  [_arrayPoints[numGrad] CGPointValue],  [_arrayPoints[numGrad+1] CGPointValue], 0);
     CGGradientRelease(gradient), gradient = NULL;
 }
 
--(void)drawIntermediateGradientNum:(uint8_t)numGradient withBaseSpace:(CGColorSpaceRef) baseSpace inContext:(CGContextRef) context
+-(void)drawIntermediateGradientNum:(uint8_t)numGrad withBaseSpace:(CGColorSpaceRef) baseSpace inContext:(CGContextRef) context
 {
     CGFloat percent = (_curValue - _minValue)/(_maxValue - _minValue);
-    CGFloat percentGradient = 4 * percent - numGradient;
+    CGFloat percentGradient = ([_arrayColors count] -1) * percent - numGrad;
+ 
+    CGFloat rValue = percentGradient * colorsValue[((numGrad+1)*4)] + (1.f-percentGradient) * colorsValue[(numGrad *4)];
+    CGFloat gValue = percentGradient * colorsValue[((numGrad+1)*4) +1] + (1.f-percentGradient) * colorsValue[(numGrad *4) +1];
+    CGFloat bValue = percentGradient * colorsValue[((numGrad+1)*4) +2] + (1.f-percentGradient) * colorsValue[(numGrad *4) +2];
+    CGFloat aValue = percentGradient * colorsValue[((numGrad+1)*4) +3] + (1.f-percentGradient) * colorsValue[(numGrad *4) +3];
     
-    CGFloat rValue = percentGradient * colorsBlueToRed[((numGradient+1)*4)] + (1.f-percentGradient) * colorsBlueToRed[(numGradient *4)];
-    CGFloat gValue = percentGradient * colorsBlueToRed[((numGradient+1)*4) +1] + (1.f-percentGradient) * colorsBlueToRed[(numGradient *4) +1];
-    CGFloat bValue = percentGradient * colorsBlueToRed[((numGradient+1)*4) +2] + (1.f-percentGradient) * colorsBlueToRed[(numGradient *4) +2];
-    
-    customGradientValues[0]     = colorsBlueToRed[numGradient *4];
-    customGradientValues[1]     = colorsBlueToRed[(numGradient *4) +1];
-    customGradientValues[2]     = colorsBlueToRed[(numGradient *4) +2];
+    customGradientValues[0]     = colorsValue[numGrad *4];
+    customGradientValues[1]     = colorsValue[(numGrad *4) +1];
+    customGradientValues[2]     = colorsValue[(numGrad *4) +2];
+    customGradientValues[3]     = colorsValue[(numGrad *4) +3];
     customGradientValues[4]     = rValue;
     customGradientValues[5]     = gValue;
     customGradientValues[6]     = bValue;
+    customGradientValues[7]     = aValue;
     
-    CGPoint sommet = CGPointMake(pointTemp[numGradient].x, pointTemp[numGradient].y + (pointTemp[numGradient +1].y - pointTemp[numGradient].y)*percentGradient);
+    CGPoint sommet = CGPointMake([_arrayPoints[numGrad] CGPointValue].x,
+                                 [_arrayPoints[numGrad] CGPointValue].y + ([_arrayPoints[numGrad+1] CGPointValue].y - [_arrayPoints[numGrad] CGPointValue].y)*percentGradient);
     
     CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, customGradientValues, NULL, 2);
-    CGContextDrawLinearGradient(context, gradient, pointTemp[numGradient], sommet, 0);
+    CGContextDrawLinearGradient(context, gradient,  [_arrayPoints[numGrad] CGPointValue], sommet, 0);
     CGGradientRelease(gradient), gradient = NULL;
 }
 
+#pragma mark - Memory management
+
+-(void)dealloc
+{
+    if (colorsValue != nil)
+    free(colorsValue);
+}
 
 @end

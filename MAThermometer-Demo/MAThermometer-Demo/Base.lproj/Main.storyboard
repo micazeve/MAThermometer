@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="vXZ-lx-hvc">
     <dependencies>
+        <deployment defaultVersion="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
@@ -46,7 +47,7 @@
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <view contentMode="scaleToFill" id="pTv-tE-f5m" userLabel="viewForThermometer3">
-                                <rect key="frame" x="42" y="124" width="16" height="139"/>
+                                <rect key="frame" x="43" y="124" width="12" height="139"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
@@ -58,17 +59,18 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Want to use it on a light background ? A dark theme is available." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MP3-AG-HFM">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MP3-AG-HFM">
                                 <rect key="frame" x="100" y="271" width="200" height="85"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <string key="text">Want to use it on a light background ? A dark theme is available. You can also choose the colors you want to display (from one to... a lot )!</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3lC-hz-fPX">
                                 <rect key="frame" x="100" y="124" width="200" height="139"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
-                                <string key="text">The thermometer is drawn using the height as main parameter, but if the view width is much smaller than its height, then the thermometer is y-centered.</string>
+                                <string key="text">The thermometer is drawn using the height as main parameter. If the view width is much smaller than its height, then the thermometer is y-centered.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -104,8 +106,8 @@
                         <outlet property="thermometerWithShadow" destination="AXq-V0-wAf" id="rfw-7c-fzI"/>
                         <outlet property="thermometerWithoutShadow" destination="RZu-am-RRV" id="BQD-oq-Ela"/>
                         <outlet property="viewForThermometer1" destination="3RT-5R-BZT" id="QmB-0R-GIh"/>
-                        <outlet property="viewForThermometer2" destination="zMN-uR-UZb" id="tWd-Oq-Lt8"/>
-                        <outlet property="viewForThermometer3" destination="pTv-tE-f5m" id="dfX-qQ-E0e"/>
+                        <outlet property="viewForThermometer2" destination="pTv-tE-f5m" id="m3a-rV-gT9"/>
+                        <outlet property="viewForThermometer3" destination="zMN-uR-UZb" id="d36-9q-PtE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>

@@ -16,4 +16,6 @@
 @property (nonatomic, assign) BOOL darkTheme;
 @property (nonatomic, assign) BOOL glassEffect;
 
+@property (nonatomic, strong) NSArray * arrayColors;
+
 @end
