@@ -269,7 +269,7 @@
     }
     
     
-    while (_curValue > valueMin)
+    while (_curValue > valueMax + _minValue)
     {
         valueMax = (index+1)/((CGFloat)([_arrayColors count]-1))*_span;
         
